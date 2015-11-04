@@ -17,11 +17,11 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         registry.setUserDestinationPrefix("/user");
     }
 
+    @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/hello").withSockJS();
         registry.addEndpoint("/register").withSockJS();
-        //registry.addEndpoint("/unregister").withSockJS();
-        //registry.addEndpoint("/bet").withSockJS();
-        //registry.addEndpoint("/action").withSockJS();
+        registry.addEndpoint("/unregister").withSockJS();
+        registry.addEndpoint("/bet").withSockJS();
+        registry.addEndpoint("/action").withSockJS();
     }
 }

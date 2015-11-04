@@ -1,10 +1,11 @@
 package com.lactaoen.blackjack.service;
 
+import com.lactaoen.blackjack.exception.BlackjackErrorCode;
+import com.lactaoen.blackjack.exception.BlackjackException;
 import com.lactaoen.blackjack.model.*;
 import com.lactaoen.blackjack.model.wrapper.GameInfoWrapper;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -22,17 +23,16 @@ public class BlackjackService {
         return game.getPlayers();
     }
 
-    public Player registerPlayer(String name) {
+    public Player registerPlayer(String name) throws BlackjackException {
         // TODO Replace magic number here
         if (game.getPlayers().size() < 4) {
-            game.addPlayer(name);
-            return game.getLastSeatedPlayer();
+            return game.addPlayer(name);
         }
 
-        return null;
+        throw new BlackjackException(BlackjackErrorCode.BJ500);
     }
 
-    public Player unregisterPlayer(String playerId) {
+    public Player unregisterPlayer(String playerId) throws BlackjackException {
         Player player = null;
         List<Player> players = game.getPlayers();
         for (int i = 0; i < players.size(); i++) {
@@ -43,22 +43,29 @@ public class BlackjackService {
             }
         }
 
+        if (player == null) {
+            throw new BlackjackException(BlackjackErrorCode.BJ550);
+        }
         return player;
     }
 
-    public GameInfoWrapper placeBet(String playerId, int betAmount) throws IOException {
-        if (betAmount < 10 || betAmount % 10 != 0) throw new IOException("Bet must be in increments of 10.");
+    public GameInfoWrapper placeBet(String playerId, int betAmount) throws BlackjackException {
+        if (!game.isActionDone()) {
+            throw new BlackjackException(BlackjackErrorCode.BJ105);
+        }
+
+        if (betAmount < 10 || betAmount % 10 != 0) throw new BlackjackException(BlackjackErrorCode.BJ110);
 
         Optional<Player> player = game.getPlayers().stream().filter(p -> p.getPlayerId().equals(playerId)).findFirst();
 
         if (player.isPresent()) {
             // Make sure player hasn't already placed a bet for this current hand
-            if (player.get().getHands().stream().filter(h -> h.getCards().isEmpty()).count() >= 1) {
-                throw new IOException("You have already made a bet for the current hand");
+            if (player.get().getHands().stream().filter(h -> h.getResult() == null).count() > 0 || player.get().getNextBet() != null) {
+                throw new BlackjackException(BlackjackErrorCode.BJ102);
             }
 
             // Validate the player has enough to make the desired bet amount
-            if (player.get().getChips() - betAmount < 0) throw new IOException("Bet amount exceeds current chip count.");
+            if (player.get().getChips() - betAmount < 0) throw new BlackjackException(BlackjackErrorCode.BJ101);
 
             // Decrement chip stack by the bet amount and place it on a new hand
             player.get().decrementChipCount(betAmount);
@@ -77,7 +84,9 @@ public class BlackjackService {
         return new GameInfoWrapper(game.getPlayers(), null, null, Round.BETTING_ROUND, null, game.getDeck().getDeckSize());
     }
 
-    public GameInfoWrapper processAction(String playerId, int handNum, Action action) {
+    public GameInfoWrapper processAction(String playerId, int handNum, Action action) throws BlackjackException {
+        if (game.isActionDone()) throw new BlackjackException(BlackjackErrorCode.BJ700);
+
         Optional<Player> player = game.getPlayers().stream().filter(p -> p.getPlayerId().equals(playerId)).findFirst();
 
         if (player.isPresent()) {
@@ -102,22 +111,29 @@ public class BlackjackService {
                                 hand.setBetAmount(hand.getBetAmount()*2);
                                 hand.addCard(game.dealCard());
                                 game.switchCurrentHandOffAndTurnNextHandOn();
+                            } else {
+                                throw new BlackjackException(BlackjackErrorCode.BJ720);
                             }
                             break;
                         case SURRENDER:
-                            player.get().incrementChipCount(hand.getBetAmount()/2);
-                            hand.setHandStatus(HandStatus.SURRENDER);
-                            game.switchCurrentHandOffAndTurnNextHandOn();
+                            if (canPerformSurrender(hand)) {
+                                player.get().incrementChipCount(hand.getBetAmount()/2);
+                                hand.setHandStatus(HandStatus.SURRENDER);
+                                game.switchCurrentHandOffAndTurnNextHandOn();
+                            } else {
+                                throw new BlackjackException(BlackjackErrorCode.BJ730);
+                            }
                             break;
                         case SPLIT:
-                            player.get().decrementChipCount(hand.getBetAmount());
                             performSplit(player.get(), hand);
                             break;
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException ex) {
-                // TODO Implement
+                throw new BlackjackException(BlackjackErrorCode.BJ701);
             }
+        } else {
+            throw new BlackjackException(BlackjackErrorCode.BJ550);
         }
 
         // If all players are done acting, then let the dealer do his thang, evaluate hands, then pay out accordingly
@@ -161,8 +177,9 @@ public class BlackjackService {
 
     /** Private util methods that perform logic operations on the Game object. **/
 
-    private void performSplit(Player player, Hand hand) {
+    private void performSplit(Player player, Hand hand) throws BlackjackException {
         if (canPerformSplit(player, hand)) {
+            player.decrementChipCount(hand.getBetAmount());
             // Remove one card from the hand and move it to it's own hand
             Card card = hand.getCards().get(1);
 
@@ -184,6 +201,8 @@ public class BlackjackService {
                 newHand.switchIsTurn();
                 game.switchCurrentHandOffAndTurnNextHandOn();
             }
+        } else {
+            throw new BlackjackException(BlackjackErrorCode.BJ740);
         }
     }
 
@@ -195,6 +214,11 @@ public class BlackjackService {
     private boolean canPerformSplit(Player player, Hand hand) {
         // Player can split only if he has enough to cover and has no more than 4 hands already in play
         return player.getChips() >= hand.getBetAmount() && player.getHands().size() < 4 && hand.isSplittable();
+    }
+
+    private boolean canPerformSurrender(Hand hand) {
+        // Player can only surrender if the hand has two cards in it
+        return hand.getCards().size() == 2;
     }
 
     private void performDealerAction() {

@@ -35,6 +35,11 @@ function connect() {
             populateDealerHand(gameObj);
             populatePlayerHands(gameObj);
         });
+
+        // Handling errors
+        stompClient.subscribe('/user/topic/errors', function(message) {
+            // Do nothing
+        });
     });
 }
 
@@ -88,6 +93,8 @@ function getSuitSymbol(suit) {
 }
 
 function populateDealerHand(gameObj) {
+    if (gameObj.gameStatus === 'BETTING_ROUND' && gameObj.dealerUpCard === null) return;
+
     // Populate the dealer hand UI
     var isActionDone = gameObj.dealer !== null;
     var dealerUI = $('#dealer-hand-display');
@@ -109,11 +116,14 @@ function populateDealerHand(gameObj) {
 }
 
 function populatePlayerHands(gameObj) {
+    if (gameObj.gameStatus === 'BETTING_ROUND' && gameObj.dealerUpCard === null) return;
+
     var players = gameObj.players;
     var turnSeatNum = null;
     var turnHandNum = null;
 
     $('.hand h3').empty();
+    $('.hand p').empty();
     $('.result-row div').empty();
     $('.active').removeClass('active');
 
@@ -133,8 +143,6 @@ function populatePlayerHands(gameObj) {
             }
             $('.value-row div[hand-num=' + (j+1) + '][seat-num=' + (i+1) + ']').html('<p class="text-center">(' + players[i].hands[j].handValue + ')</p>');
             $('.bet-row div[hand-num=' + (j+1) + '][seat-num=' + (i+1) + ']').html('<p class="text-center">$' + players[i].hands[j].betAmount + '</p>');
-
-            console.log(players[i].hands[j].result !== null);
 
             // Fill in the result row if the hand is over
             if (players[i].hands[j].result !== null) {

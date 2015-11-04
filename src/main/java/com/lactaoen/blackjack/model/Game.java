@@ -2,13 +2,12 @@ package com.lactaoen.blackjack.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /** Technically not a model since it holds state information **/
 public class Game {
 
-    private final int MAX_PLAYERS_PER_GAME = 1;
+    private final int MAX_PLAYERS_PER_GAME = 4;
 
     private Deck deck;
     private Player dealer;
@@ -62,10 +61,6 @@ public class Game {
         return player;
     }
 
-    public Player getLastSeatedPlayer() {
-        return players.get(players.size() - 1);
-    }
-
     public Card dealCard() {
         return deck.dealCard();
     }
@@ -108,16 +103,20 @@ public class Game {
         hands.get(currentIsTurnIndex).switchIsTurn();
         // Switch next hand on only if it's not the last player hand left to act
         if (currentIsTurnIndex != hands.size() - 1) {
-            hands.get(currentIsTurnIndex + 1).switchIsTurn();
+            Hand hand = hands.get(currentIsTurnIndex + 1);
+            // Check if this hand is a blackjack. If it is, then skip and go to next one
+            if (hand.isBlackjack()) {
+                hand.switchIsTurn();
+                switchCurrentHandOffAndTurnNextHandOn();
+            } else {
+                hand.switchIsTurn();
 
-            // If this hand only has one card in it, it was split. Need to add one more card.
-            hands.get(currentIsTurnIndex + 1).addCard(dealCard());
+                // If this hand only has one card in it, it was split. Need to add one more card.
+                if (hand.getCards().size() == 1) {
+                    hand.addCard(dealCard());
+                }
+            }
         }
-    }
-
-    public void clearAllHands() {
-        dealer.getHands().clear();
-        players.stream().forEach(p -> p.getHands().clear());
     }
 
     public boolean isBettingRoundDone() {
