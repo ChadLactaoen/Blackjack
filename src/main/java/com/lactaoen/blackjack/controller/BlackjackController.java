@@ -22,6 +22,12 @@ public class BlackjackController {
     @Autowired
     private BlackjackService blackjackService;
 
+    @MessageMapping("/connect")
+    @SendTo("/topic/greetings")
+    public String greeting() throws Exception {
+        return "Hello";
+    }
+
     @MessageMapping("/register")
     @SendToUser("/topic/player")
     public PlayerInfo register(RegistrationWrapper reg) throws BlackjackException {
