@@ -16,7 +16,8 @@ public enum BlackjackErrorCode {
     BJ701("Hand number provided does not represent an actual hand number."),
     BJ720("Hand is not eligible for a double down."),
     BJ730("Hand is not eligible for a surrender."),
-    BJ740("Hand is not eligible for a split.");
+    BJ740("Hand is not eligible for a split."),
+    BJ799("Hand is currently not able to be acted on. You are acting out of turn.");
 
     private String message;
 

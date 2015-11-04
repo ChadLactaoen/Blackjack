@@ -24,7 +24,6 @@ public class BlackjackService {
     }
 
     public Player registerPlayer(String name) throws BlackjackException {
-        // TODO Replace magic number here
         if (game.getPlayers().size() < 4) {
             return game.addPlayer(name);
         }
@@ -128,6 +127,8 @@ public class BlackjackService {
                             performSplit(player.get(), hand);
                             break;
                     }
+                } else {
+                    throw new BlackjackException(BlackjackErrorCode.BJ799);
                 }
             } catch (ArrayIndexOutOfBoundsException ex) {
                 throw new BlackjackException(BlackjackErrorCode.BJ701);
@@ -241,9 +242,8 @@ public class BlackjackService {
                 hand.setResult(result);
 
                 if (hand.getHandStatus() == HandStatus.BLACKJACK) {
-                    // TODO Decide here if we want to make Blackjack automatic wins. Otherwise, need to implement logic
                     // Award 3:2 payout for blackjack
-                    p.incrementChipCount((int)(hand.getBetAmount()*1.5) + hand.getBetAmount());
+                    p.incrementChipCount((int)((hand.getBetAmount()*1.5) + hand.getBetAmount()));
                 } else if (result == Result.WIN) {
                     // Award the player as well as give him the bet back
                     p.incrementChipCount(hand.getBetAmount()*2);

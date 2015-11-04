@@ -105,12 +105,17 @@ public class Player {
         hands.clear();
     }
 
+    @JsonIgnore
     public Integer getNextBet() {
         return nextBet;
     }
 
     public void setNextBet(Integer nextBet) {
         this.nextBet = nextBet;
+    }
+
+    public boolean isBetInForNextRound() {
+        return nextBet != null;
     }
 
     public void moveBetToNewHand() {

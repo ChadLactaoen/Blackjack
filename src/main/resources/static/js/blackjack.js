@@ -7,6 +7,7 @@ function setConnected(connected) {
     document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
     document.getElementById('bettingCenter').style.visibility = connected ? 'visible' : 'hidden';
     document.getElementById('actionButtons').style.visibility = connected ? 'visible' : 'hidden';
+    document.getElementById('description').style.visibility = connected ? 'visible' : 'hidden';
     document.getElementById('response').innerHTML = '';
 }
 
@@ -53,6 +54,7 @@ function disconnect() {
 
 function sendName() {
     var name = document.getElementById('name').value;
+    $('#conversationDiv').hide();
     stompClient.send("/app/register", {}, JSON.stringify({ 'name': name }));
 }
 
