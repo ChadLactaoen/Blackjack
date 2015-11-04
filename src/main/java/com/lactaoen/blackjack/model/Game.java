@@ -3,6 +3,7 @@ package com.lactaoen.blackjack.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** Technically not a model since it holds state information **/
 public class Game {
@@ -78,6 +79,9 @@ public class Game {
     }
 
     public Hand getDealerHand() {
+        if (dealer.getHands().isEmpty()) {
+            dealer.getHands().add(new Hand());
+        }
         return dealer.getHands().get(0);
     }
 
@@ -105,6 +109,9 @@ public class Game {
         // Switch next hand on only if it's not the last player hand left to act
         if (currentIsTurnIndex != hands.size() - 1) {
             hands.get(currentIsTurnIndex + 1).switchIsTurn();
+
+            // If this hand only has one card in it, it was split. Need to add one more card.
+            hands.get(currentIsTurnIndex + 1).addCard(dealCard());
         }
     }
 
@@ -114,7 +121,8 @@ public class Game {
     }
 
     public boolean isBettingRoundDone() {
-        return players.stream().filter(p -> p.getNextBet() != null).count() == players.size();
+        return players.stream().filter(p -> p.getNextBet() != null).count()
+                == players.stream().filter(Player::isActive).count();
     }
 
     public void dealNewHand() {
@@ -125,11 +133,19 @@ public class Game {
 
         // Deal each player a card one at a time, including the dealer
         for (int i = 1; i <= 2; i++) {
-            for (Player player : players) {
+            players.stream().filter(Player::isActive).forEach(player -> {
                 player.getHands().get(0).addCard(dealCard());
-            }
+            });
             getDealerHand().addCard(dealCard());
         }
+    }
+
+    public List<Hand> getAllHands() {
+        List<Hand> hands = new ArrayList<>();
+        for (Player p : players) {
+            hands.addAll(p.getHands().stream().collect(Collectors.toList()));
+        }
+        return hands;
     }
 
     public boolean isActionDone() {

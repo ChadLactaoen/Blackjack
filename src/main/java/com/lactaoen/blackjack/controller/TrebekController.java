@@ -13,5 +13,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class TrebekController {
 
-
+    public void kickPlayer(String playerId) {
+        // TODO
+    }
 }

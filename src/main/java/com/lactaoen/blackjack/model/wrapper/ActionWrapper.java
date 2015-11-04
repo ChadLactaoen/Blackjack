@@ -8,6 +8,9 @@ public class ActionWrapper {
     private int handNum;
     private Action action;
 
+    public ActionWrapper() {
+    }
+
     public ActionWrapper(String playerId, int handNum, Action action) {
         this.playerId = playerId;
         this.handNum = handNum;

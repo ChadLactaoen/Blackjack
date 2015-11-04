@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blackjack Test Client</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/blackjack.css" rel="stylesheet">
+</head>
+<body onload="disconnect()">
+    <div class="container">
+        <div>
+            <div>
+                <button id="connect" onclick="connect();">Connect</button>
+                <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+            </div>
+            <div id="conversationDiv">
+                <label>What is your name? </label><input type="text" id="name" />
+                <button id="sendName" onclick="sendName();">Send</button>
+                <p id="response"></p>
+            </div>
+
+            <!-- Betting center -->
+            <div id="bettingCenter">
+                <label>Bet Amount (increments of 10) </label><input type="text" id="bet" />
+                <button id="sendBetAmount" onClick="placeBet();">Place Bet</button>
+            </div>
+
+            <!-- Dealer hand display will go here -->
+            <div id="dealerHand"></div>
+
+            <!-- Player hands display will go here -->
+            <div id="playerHands"></div>
+
+            <!-- Action buttons -->
+            <div id="actionButtons">
+                <button id="standAction" onclick="handleStand()">Stand</button>
+                <button id="hitAction" onclick="handleHit()">Hit</button>
+                <button id="doubleAction" onclick="handleDouble()">Double</button>
+                <button id="splitAction" onclick="handleSplit()">Split</button>
+                <button id="surrenderAction" onclick="handleSurrender()">Surrender</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center"><h1>Dealer</h1></div>
+        </div>
+        <div class="row">
+            <div class="col-md-12"><h2 id="dealer-hand-display" class="text-center"></h2></div>
+        </div>
+        <div class="row">
+            <div id="dealer-hand-value" class="col-md-12 text-center"></div>
+        </div>
+        <div class="row label-row">
+            <div class="col-md-1"><h2>Seat</h2></div>
+            <div class="col-md-3"><h2>Player</h2></div>
+            <div class="col-md-2 text-center"><h2>Hand 1</h2></div>
+            <div class="col-md-2 text-center"><h2>Hand 2</h2></div>
+            <div class="col-md-2 text-center"><h2>Hand 3</h2></div>
+            <div class="col-md-2 text-center"><h2>Hand 4</h2></div>
+        </div>
+        <div class="row hand-row">
+            <div class="col-md-1 seat-label" seat-num="1"></div>
+            <div class="col-md-3 player-name" seat-num="1"></div>
+            <div class="col-md-2 alternate hand" hand-num="1" seat-num="1"><h3 class="text-center"></h3></div>
+            <div class="col-md-2 hand" hand-num="2" seat-num="1"><h3 class="text-center"></h3></div>
+            <div class="col-md-2 alternate hand" hand-num="3" seat-num="1"><h3 class="text-center"></h3></div>
+            <div class="col-md-2 hand" hand-num="4" seat-num="1"><h3 class="text-center"></h3></div>
+        </div>
+        <div class="row value-row">
+            <div class="col-md-offset-4 col-md-2 alternate hand" hand-num="1" seat-num="1"></div>
+            <div class="col-md-2 hand" hand-num="2" seat-num="1"></div>
+            <div class="col-md-2 alternate hand" hand-num="3" seat-num="1"></div>
+            <div class="col-md-2 hand" hand-num="4" seat-num="1"></div>
+        </div>
+        <div class="row bet-row">
+            <div class="col-md-offset-4 col-md-2 alternate hand" hand-num="1" seat-num="1"></div>
+            <div class="col-md-2 hand" hand-num="2" seat-num="1"></div>
+            <div class="col-md-2 alternate hand" hand-num="3" seat-num="1"></div>
+            <div class="col-md-2 hand" hand-num="4" seat-num="1"></h3></div>
+        </div>
+        <div class="row result-row">
+            <div class="col-md-offset-4 col-md-2 alternate hand" hand-num="1" seat-num="1"></div>
+            <div class="col-md-2 hand" hand-num="2" seat-num="1"></div>
+            <div class="col-md-2 alternate hand" hand-num="3" seat-num="1"></div>
+            <div class="col-md-2 hand" hand-num="4" seat-num="1"></h3></div>
+        </div>
+    </div>
+    <!-- Required js files -->
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/sockjs-0.3.4.js"></script>
+    <script src="js/stomp.js"></script>
+    <script src="js/blackjack.js"></script>
+</body>
+</html>

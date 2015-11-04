@@ -5,6 +5,9 @@ public class BetWrapper {
     private String playerId;
     private int betAmount;
 
+    public BetWrapper() {
+    }
+
     public BetWrapper(String playerId, int betAmount) {
         this.playerId = playerId;
         this.betAmount = betAmount;

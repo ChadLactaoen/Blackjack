@@ -1,5 +1,7 @@
 package com.lactaoen.blackjack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,12 +11,14 @@ public class Hand {
     private List<Card> cards;
     private boolean isTurn;
     private Result result;
+    private HandStatus handStatus;
 
     public Hand() {
         betAmount = 0;
         cards = new ArrayList<>();
         isTurn = false;
         result = null;
+        handStatus = HandStatus.IN_PLAY;
     }
 
     public Hand(int betAmount) {
@@ -22,6 +26,7 @@ public class Hand {
         cards = new ArrayList<>();
         isTurn = false;
         result = null;
+        handStatus = HandStatus.IN_PLAY;
     }
 
     public int getBetAmount() {
@@ -56,6 +61,14 @@ public class Hand {
         this.result = result;
     }
 
+    public HandStatus getHandStatus() {
+        return handStatus;
+    }
+
+    public void setHandStatus(HandStatus handStatus) {
+        this.handStatus = handStatus;
+    }
+
     public void switchIsTurn() {
         isTurn = !isTurn;
     }
@@ -85,10 +98,12 @@ public class Hand {
         return sum;
     }
 
+    @JsonIgnore
     public boolean isSplittable() {
         return cards.size() == 2 && cards.get(0).getRank() == cards.get(1).getRank();
     }
 
+    @JsonIgnore
     public boolean isBlackjack() {
         return cards.size() == 2 && cards.stream().mapToInt(c -> c.getRank().getValue()).sum() == 21;
     }

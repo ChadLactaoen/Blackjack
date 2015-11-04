@@ -1,0 +1,8 @@
+.active {
+    border-style: solid;
+    border-color: #3c763d;
+}
+
+.alternate {
+    background-color: #eee;
+}

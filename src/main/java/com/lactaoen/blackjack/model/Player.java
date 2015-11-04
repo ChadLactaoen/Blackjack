@@ -1,12 +1,15 @@
 package com.lactaoen.blackjack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public class Player {
 
-    private String playerId;
+    private final String playerId;
     private String name;
     private int seatNum;
     private int chips;
@@ -19,19 +22,15 @@ public class Player {
         playerId = UUID.randomUUID().toString();
         this.name = name;
         this.seatNum = seatNum;
-        // Here lies an EASTER EGG - register with a name containing 'Zappos' and receive 200 more chips
-        chips = this.name.contains("Zappos") ? 1200 : 1000;
+        chips = isEasterEggName(name) ? 1200 : 1000;
         hands = new ArrayList<>();
         handsPlayed = 0;
         isActive = true;
     }
 
+    @JsonIgnore
     public String getPlayerId() {
         return playerId;
-    }
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
     }
 
     public String getName() {
@@ -117,5 +116,12 @@ public class Player {
     public void moveBetToNewHand() {
         hands.add(new Hand(nextBet));
         nextBet = null;
+    }
+
+    private boolean isEasterEggName(String name) {
+        // If you're reading this, congratulations! You've found an easter egg!
+        // When registering your player name, use a name that contains any of these strings and you get 200 more chips.
+        String[] easterEggNames = new String[] {"Nyan Cat", "John Cena", "Numa Numa Guy", "Doge"};
+        return Arrays.asList(easterEggNames).stream().filter(name::contains).count() > 0;
     }
 }

@@ -27,8 +27,8 @@ public class BlackjackController {
 
     @MessageMapping("/register")
     @SendToUser("/topic/player")
-    public Player register(RegistrationWrapper reg) {
-        return blackjackService.registerPlayer(reg.getName());
+    public PlayerInfo register(RegistrationWrapper reg) {
+        return new PlayerInfo().transpose(blackjackService.registerPlayer(reg.getName()));
     }
 
     @MessageMapping("/unregister")

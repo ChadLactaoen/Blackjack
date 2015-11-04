@@ -5,8 +5,8 @@ import com.lactaoen.blackjack.model.wrapper.GameInfoWrapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -19,17 +19,11 @@ public class BlackjackService {
     }
 
     public List<Player> getPlayers() {
-        // Return only a copy of the list of players as we don't want to give them the playerIds
-        List<Player> copy = new ArrayList<>();
-        copy.addAll(game.getPlayers());
-        copy.stream().forEach(p -> {
-            p.setPlayerId(null);
-            p.setHands(null);
-        });
-        return copy;
+        return game.getPlayers();
     }
 
     public Player registerPlayer(String name) {
+        // TODO Replace magic number here
         if (game.getPlayers().size() < 4) {
             game.addPlayer(name);
             return game.getLastSeatedPlayer();
@@ -75,6 +69,8 @@ public class BlackjackService {
         if (game.isBettingRoundDone()) {
             game.getPlayers().stream().forEach(Player::removeOldHands);
             game.getPlayers().stream().forEach(Player::moveBetToNewHand);
+            game.getDealer().getHands().clear();
+            game.getDealer().addHand(new Hand());
             return startNewHand();
         }
 
@@ -95,18 +91,26 @@ public class BlackjackService {
                             break;
                         case HIT:
                             hand.addCard(game.dealCard());
+                            if (hand.getHandValue() > 21) {
+                                hand.setHandStatus(HandStatus.BUST);
+                                game.switchCurrentHandOffAndTurnNextHandOn();
+                            }
                             break;
                         case DOUBLE:
                             if (canPerformDouble(player.get(), hand)) {
+                                player.get().decrementChipCount(hand.getBetAmount());
+                                hand.setBetAmount(hand.getBetAmount()*2);
                                 hand.addCard(game.dealCard());
                                 game.switchCurrentHandOffAndTurnNextHandOn();
                             }
                             break;
                         case SURRENDER:
                             player.get().incrementChipCount(hand.getBetAmount()/2);
+                            hand.setHandStatus(HandStatus.SURRENDER);
                             game.switchCurrentHandOffAndTurnNextHandOn();
                             break;
                         case SPLIT:
+                            player.get().decrementChipCount(hand.getBetAmount());
                             performSplit(player.get(), hand);
                             break;
                     }
@@ -131,7 +135,7 @@ public class BlackjackService {
 
     private GameInfoWrapper startNewHand() {
         // Add to their hands played counter
-        game.getPlayers().stream().forEach(Player::incrementHandsPlayed);
+        game.getPlayers().stream().filter(Player::isActive).forEach(Player::incrementHandsPlayed);
         game.dealNewHand();
 
         // Check if dealer has blackjack. If she does, then the hand is over
@@ -139,8 +143,18 @@ public class BlackjackService {
             evaluateHands();
             return new GameInfoWrapper(game.getPlayers(), game.getDealer(), game.getDealerUpCard(), Round.BETTING_ROUND, null, game.getDeckSize());
         } else {
-            // Start the game as usual otherwise
-            game.getPlayers().get(0).getHands().get(0).setTurn(true);
+            // This needs to check if anyone has any blackjacks so we can set the hand status appropriately
+            game.getPlayers().stream().forEach(p -> p.getHands().stream().forEach(h -> {if(h.isBlackjack()) h.setHandStatus(HandStatus.BLACKJACK);}));
+
+            // Start the game as usual. Check for blackjack though, that's an automatic win
+            try {
+                game.getAllHands().stream().filter(h -> h.getHandStatus() != HandStatus.BLACKJACK).findFirst().get().setTurn(true);
+            } catch (NoSuchElementException ex) {
+                // This handles the case if all current players already have blackjack, then the hand is over
+                evaluateHands();
+                return new GameInfoWrapper(game.getPlayers(), game.getDealer(), game.getDealerUpCard(), Round.BETTING_ROUND, null, game.getDeckSize());
+            }
+
             return new GameInfoWrapper(game.getPlayers(), null, game.getDealerUpCard(), Round.HAND_IN_PROGRESS, null, game.getDeckSize());
         }
     }
@@ -184,10 +198,14 @@ public class BlackjackService {
     }
 
     private void performDealerAction() {
-        // HIT if the dealer's hand value < 17, then evaluate again
-        while (game.getDealerHand().getHandValue() < 17) {
+        while (dealerNeedsToHit()) {
             game.getDealerHand().addCard(game.dealCard());
         }
+    }
+
+    private boolean dealerNeedsToHit() {
+        // Dealer only needs to hit iff hand value is less that 17 and there's at least one player who hasn't busted, surrendered, or has blackjack
+        return game.getDealerHand().getHandValue() < 17 && game.getAllHands().stream().filter(h -> h.getHandStatus() == HandStatus.IN_PLAY).count() > 0;
     }
 
     private void evaluateHands() {
@@ -197,9 +215,17 @@ public class BlackjackService {
             p.getHands().stream().forEach(hand -> {
                 Result result = getResult(hand.getHandValue(), dealerHandValue);
                 hand.setResult(result);
-                if (result == Result.WIN) {
+
+                if (hand.getHandStatus() == HandStatus.BLACKJACK) {
+                    // TODO Decide here if we want to make Blackjack automatic wins. Otherwise, need to implement logic
+                    // Award 3:2 payout for blackjack
+                    p.incrementChipCount((int)(hand.getBetAmount()*1.5) + hand.getBetAmount());
+                } else if (result == Result.WIN) {
                     // Award the player as well as give him the bet back
                     p.incrementChipCount(hand.getBetAmount()*2);
+                } else if (result == Result.PUSH) {
+                    // Give him back his original bet
+                    p.incrementChipCount(hand.getBetAmount());
                 }
             });
         }
@@ -208,6 +234,12 @@ public class BlackjackService {
     }
 
     private Result getResult(int playerHandVal, int dealerHandVal) {
-        return Result.getByValue(Integer.compare(playerHandVal, dealerHandVal));
+        if (playerHandVal > 21) {
+            return Result.LOSE;
+        } else if (dealerHandVal > 21) {
+            return Result.WIN;
+        } else {
+            return Result.getByValue(Integer.compare(playerHandVal, dealerHandVal));
+        }
     }
 }

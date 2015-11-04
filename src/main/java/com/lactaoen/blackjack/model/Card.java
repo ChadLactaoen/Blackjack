@@ -26,6 +26,27 @@ public class Card {
         this.suit = suit;
     }
 
+    public char getAlias() {
+        switch(rank) {
+            case TEN:
+                return 'T';
+            case JACK:
+                return 'J';
+            case QUEEN:
+                return 'Q';
+            case KING:
+                return 'K';
+            case ACE:
+                return 'A';
+            default:
+                return Character.forDigit(rank.getValue(), 10);
+        }
+    }
+
+    public int getCardValue() {
+        return rank.getValue();
+    }
+
     @Override
     public String toString() {
         return rank + " OF " + suit;
