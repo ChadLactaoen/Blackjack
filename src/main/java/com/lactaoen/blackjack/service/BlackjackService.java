@@ -19,10 +19,22 @@ public class BlackjackService {
         game = new Game();
     }
 
+    /**
+     * Get all players.
+     *
+     * @return A List of all players currently registered to the game.
+     */
     public List<Player> getPlayers() {
         return game.getPlayers();
     }
 
+    /**
+     * Attempts to add a new player to the game.
+     *
+     * @param name The name of the player.
+     * @return The Player object created after registering.
+     * @throws BlackjackException Thrown if there is no more room for another player in the Game.
+     */
     public Player registerPlayer(String name) throws BlackjackException {
         if (game.getPlayers().size() < 4) {
             return game.addPlayer(name);
@@ -31,6 +43,13 @@ public class BlackjackService {
         throw new BlackjackException(BlackjackErrorCode.BJ500);
     }
 
+    /**
+     * Unregisters a player from the game.
+     *
+     * @param playerId The secret key of the Player wanting to be unregistered from the Game.
+     * @return The Player object who will be unregistered.
+     * @throws BlackjackException Thrown if the player id is not found.
+     */
     public Player unregisterPlayer(String playerId) throws BlackjackException {
         Player player = null;
         List<Player> players = game.getPlayers();
@@ -48,11 +67,19 @@ public class BlackjackService {
         return player;
     }
 
+    /**
+     * Places a bet for the upcoming hand.
+     *
+     * @param playerId The secret key of the Player.
+     * @param betAmount The amount to deduct from the Player's chip count and add to the next hand.
+     * @return The status of the Game.
+     * @throws BlackjackException Thrown if the bet can't be placed for any reason.
+     */
     public GameInfoWrapper placeBet(String playerId, int betAmount) throws BlackjackException {
-        if (!game.isActionDone()) {
-            throw new BlackjackException(BlackjackErrorCode.BJ105);
-        }
+        // Player can't place a bet if the action on the current hand is not finished
+        if (!game.isActionDone()) throw new BlackjackException(BlackjackErrorCode.BJ105);
 
+        // Validate bet is increment of 10
         if (betAmount < 10 || betAmount % 10 != 0) throw new BlackjackException(BlackjackErrorCode.BJ110);
 
         Optional<Player> player = game.getPlayers().stream().filter(p -> p.getPlayerId().equals(playerId)).findFirst();
@@ -83,7 +110,17 @@ public class BlackjackService {
         return new GameInfoWrapper(game.getPlayers(), null, null, Round.BETTING_ROUND, null, game.getDeck().getDeckSize());
     }
 
+    /**
+     * Processes a Player's action on his current hand.
+     *
+     * @param playerId The secret key of the Player.
+     * @param handNum The hand number (0-indexed) in the Player's list of hands on which the action will be applied.
+     * @param action The action to be executed.
+     * @return The status of the Game after the action is executed.
+     * @throws BlackjackException Thrown if the action can't be processed for any reason.
+     */
     public GameInfoWrapper processAction(String playerId, int handNum, Action action) throws BlackjackException {
+        // Check that we are not in the betting round
         if (game.isActionDone()) throw new BlackjackException(BlackjackErrorCode.BJ700);
 
         Optional<Player> player = game.getPlayers().stream().filter(p -> p.getPlayerId().equals(playerId)).findFirst();
@@ -128,12 +165,15 @@ public class BlackjackService {
                             break;
                     }
                 } else {
+                    // Thrown when the player is acting out of turn
                     throw new BlackjackException(BlackjackErrorCode.BJ799);
                 }
             } catch (ArrayIndexOutOfBoundsException ex) {
+                // Hand number param was not a valid hand number
                 throw new BlackjackException(BlackjackErrorCode.BJ701);
             }
         } else {
+            // Could not find player for the given player id
             throw new BlackjackException(BlackjackErrorCode.BJ550);
         }
 
@@ -253,8 +293,6 @@ public class BlackjackService {
                 }
             });
         }
-
-        // Boot out players who don't have enough chips
     }
 
     private Result getResult(int playerHandVal, int dealerHandVal) {

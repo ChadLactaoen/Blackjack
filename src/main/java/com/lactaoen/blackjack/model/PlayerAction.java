@@ -1,7 +1,5 @@
 package com.lactaoen.blackjack.model;
 
-import com.lactaoen.blackjack.model.Action;
-
 public class PlayerAction {
 
     private String playerName;

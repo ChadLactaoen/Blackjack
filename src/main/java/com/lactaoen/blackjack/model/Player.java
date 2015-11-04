@@ -22,7 +22,7 @@ public class Player {
         playerId = UUID.randomUUID().toString();
         this.name = name;
         this.seatNum = seatNum;
-        chips = isEasterEggName(name) ? 1200 : 1000;
+        chips = isEasterEggName(name) ? 1150 : 1000;
         hands = new ArrayList<>();
         handsPlayed = 0;
         isActive = true;
@@ -125,7 +125,7 @@ public class Player {
 
     private boolean isEasterEggName(String name) {
         // If you're reading this, congratulations! You've found an easter egg!
-        // When registering your player name, use a name that contains any of these strings and you get 200 more chips.
+        // When registering your player name, use a name that contains any of these strings and you get 150 more chips.
         String[] easterEggNames = new String[] {"Nyan Cat", "John Cena", "Numa Numa Guy", "Doge"};
         return Arrays.asList(easterEggNames).stream().filter(name::contains).count() > 0;
     }
