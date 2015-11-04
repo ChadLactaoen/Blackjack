@@ -1,7 +1,5 @@
 package com.lactaoen.blackjack.model;
 
-import java.io.IOException;
-
 public enum Result {
     WIN(1),
     LOSE(-1),

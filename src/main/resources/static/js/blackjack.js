@@ -46,6 +46,9 @@ function connect() {
 
 function disconnect() {
     if (stompClient != null) {
+        if (playerId != null) {
+            stompClient.send("/app/unregister", {}, JSON.stringify({ 'playerId': playerId}));
+        }
         stompClient.disconnect();
     }
     setConnected(false);
@@ -127,11 +130,17 @@ function populatePlayerHands(gameObj) {
     $('.hand h3').empty();
     $('.hand p').empty();
     $('.result-row div').empty();
+    $('.seat-label').empty();
+    $('.hand-count').empty();
+    $('.player-name').empty();
+
+
     $('.active').removeClass('active');
 
     for (var i = 0; i < players.length; i++) {
         $('.seat-label[seat-num=' + players[i].seatNum + ']').html('<h3>' + players[i].seatNum + '</h3>');
         $('.player-name[seat-num=' + (i+1) + ']').html('<h3>' + players[i].name + ' - $' + players[i].chips + '</h3>');
+        $('.hand-count[seat-num=' + (i+1) + ']').html('<p>Hands Played: ' + players[i].handsPlayed + '</p>');
         for (var j = 0; j < players[i].hands.length; j++) {
 
             if (players[i].hands[j].turn) {

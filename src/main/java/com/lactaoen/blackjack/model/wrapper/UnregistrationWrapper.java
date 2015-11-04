@@ -4,6 +4,9 @@ public class UnregistrationWrapper {
 
     private String playerId;
 
+    public UnregistrationWrapper() {
+    }
+
     public UnregistrationWrapper(String playerId) {
         this.playerId = playerId;
     }

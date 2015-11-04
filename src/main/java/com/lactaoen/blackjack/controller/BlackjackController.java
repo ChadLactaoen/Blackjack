@@ -1,6 +1,5 @@
 package com.lactaoen.blackjack.controller;
 
-import com.lactaoen.blackjack.exception.BlackjackErrorCode;
 import com.lactaoen.blackjack.exception.BlackjackException;
 import com.lactaoen.blackjack.model.*;
 import com.lactaoen.blackjack.model.wrapper.*;
@@ -54,7 +53,9 @@ public class BlackjackController {
 
     @MessageMapping("/action")
     @SendTo("/topic/game")
-    public GameInfoWrapper submitAction(ActionWrapper action) throws BlackjackException {
+    public GameInfoWrapper submitAction(ActionWrapper action) throws BlackjackException, InterruptedException {
+        // Waits 3/4 second before sending message to simulate waiting for the next action
+        Thread.sleep(750);
         return blackjackService.processAction(action.getPlayerId(), action.getHandNum(), action.getAction());
     }
 
