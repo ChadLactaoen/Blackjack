@@ -3,13 +3,13 @@ package com.lactaoen.blackjack.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class Player {
 
-    private final String playerId;
+    private String playerId;
     private String name;
     private int seatNum;
     private int chips;
@@ -17,6 +17,9 @@ public class Player {
     private int handsPlayed;
     private Integer nextBet;
     private boolean isActive;
+
+    public Player() {
+    }
 
     public Player(String name, int seatNum) {
         playerId = UUID.randomUUID().toString();
@@ -119,14 +122,21 @@ public class Player {
     }
 
     public void moveBetToNewHand() {
+        chips -= nextBet;
         hands.add(new Hand(nextBet));
         nextBet = null;
+    }
+
+    public void toggleIsActive() {
+        isActive = !isActive;
     }
 
     private boolean isEasterEggName(String name) {
         // If you're reading this, congratulations! You've found an easter egg!
         // When registering your player name, use a name that contains any of these strings and you get 150 more chips.
-        String[] easterEggNames = new String[] {"Nyan Cat", "John Cena", "Numa Numa Guy", "Doge"};
-        return Arrays.asList(easterEggNames).stream().filter(name::contains).count() > 0;
+        // Also, my team came up with some of these, hence so many cat references.
+        String[] easterEggNames = new String[] {"nyan cat", "john cena", "numa numa", "doge", "↑↑↓↓←→←→ⒷⒶStart",
+                "right meow", "grumpy cat", "queen of blades", "super mario", "ash ketchum", "inigo montoya"};
+        return Stream.of(easterEggNames).filter(name.toLowerCase()::contains).count() > 0;
     }
 }

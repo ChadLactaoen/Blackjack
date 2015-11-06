@@ -4,8 +4,11 @@ import com.lactaoen.blackjack.exception.BlackjackErrorCode;
 import com.lactaoen.blackjack.exception.BlackjackException;
 import com.lactaoen.blackjack.model.*;
 import com.lactaoen.blackjack.model.wrapper.GameInfoWrapper;
+import com.lactaoen.blackjack.model.wrapper.PlayerHandWrapper;
+import com.lactaoen.blackjack.model.wrapper.PlayerListWrapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -28,6 +31,14 @@ public class BlackjackService {
         return game.getPlayers();
     }
 
+    public PlayerListWrapper getPlayersForTrebek() {
+        List<PlayerInfo> playerList = new ArrayList<>();
+        for (Player p : game.getPlayers()) {
+            playerList.add(new PlayerInfo().transpose(p));
+        }
+        return new PlayerListWrapper(playerList);
+    }
+
     /**
      * Places a bet for the upcoming hand.
      *
@@ -40,12 +51,20 @@ public class BlackjackService {
         // Player can't place a bet if the action on the current hand is not finished
         if (!game.isActionDone()) throw new BlackjackException(BlackjackErrorCode.BJ105);
 
+        // Hacky. Trebek will call this only to redraw the UI after he's kicked someone out of the game
+        if (playerId.equals("Hello, my name is Inigo Montoya.")) {
+            return new GameInfoWrapper(game.getPlayers(), game.getDealer(), null, Round.BETTING_ROUND, null, game.getDeck().getDeckSize());
+        }
+
         // Validate bet is increment of 10
         if (betAmount < 10 || betAmount % 10 != 0) throw new BlackjackException(BlackjackErrorCode.BJ110);
 
         Optional<Player> player = game.getPlayers().stream().filter(p -> p.getPlayerId().equals(playerId)).findFirst();
 
         if (player.isPresent()) {
+            // Player can't place bet if he's inactive
+            if (!player.get().isActive()) throw new BlackjackException(BlackjackErrorCode.BJ570);
+
             // Make sure player hasn't already placed a bet for this current hand
             if (player.get().getHands().stream().filter(h -> h.getResult() == null).count() > 0 || player.get().getNextBet() != null) {
                 throw new BlackjackException(BlackjackErrorCode.BJ102);
@@ -54,13 +73,13 @@ public class BlackjackService {
             // Validate the player has enough to make the desired bet amount
             if (player.get().getChips() - betAmount < 0) throw new BlackjackException(BlackjackErrorCode.BJ101);
 
-            // Decrement chip stack by the bet amount and place it on a new hand
-            player.get().decrementChipCount(betAmount);
             player.get().setNextBet(betAmount);
+        } else {
+            throw new BlackjackException(BlackjackErrorCode.BJ550);
         }
 
-        // If all players have placed their bet for this hand, then deal out the cards
-        if (game.isBettingRoundDone()) {
+        // If all players have placed their bet for this hand and we're on auto-pilot, then deal out the cards
+        if (game.isBettingRoundDone() && game.getDealer().isAuto()) {
             game.getPlayers().stream().forEach(Player::removeOldHands);
             game.getPlayers().stream().filter(Player::isActive).forEach(Player::moveBetToNewHand);
             game.getDealer().getHands().clear();
@@ -68,7 +87,7 @@ public class BlackjackService {
             return startNewHand();
         }
 
-        return new GameInfoWrapper(game.getPlayers(), null, null, Round.BETTING_ROUND, null, game.getDeck().getDeckSize());
+        return new GameInfoWrapper(game.getPlayers(), game.getDealer(), null, Round.BETTING_ROUND, null, game.getDeck().getDeckSize());
     }
 
     /**
@@ -94,6 +113,13 @@ public class BlackjackService {
      * @throws BlackjackException Thrown if the player id is not found.
      */
     public Player unregisterPlayer(String playerId) throws BlackjackException {
+        if (!game.isActionDone()) {
+            // If the player tries to unregister during a hand, allow them to do it, but set the player to inactive
+            // We can kick them out later
+            game.getPlayers().stream().filter(p -> p.getPlayerId().equals(playerId)).findFirst().ifPresent(pl -> pl.setActive(false));
+            throw new BlackjackException(BlackjackErrorCode.BJ930);
+        }
+
         Player player = null;
         List<Player> players = game.getPlayers();
         for (int i = 0; i < players.size(); i++) {
@@ -110,7 +136,7 @@ public class BlackjackService {
         }
 
         if (player == null) {
-            throw new BlackjackException(BlackjackErrorCode.BJ550);
+            throw new BlackjackException(BlackjackErrorCode.BJ920);
         }
         return player;
     }
@@ -172,7 +198,7 @@ public class BlackjackService {
                     // Thrown when the player is acting out of turn
                     throw new BlackjackException(BlackjackErrorCode.BJ799);
                 }
-            } catch (ArrayIndexOutOfBoundsException ex) {
+            } catch (IndexOutOfBoundsException ex) {
                 // Hand number param was not a valid hand number
                 throw new BlackjackException(BlackjackErrorCode.BJ701);
             }
@@ -192,6 +218,51 @@ public class BlackjackService {
         // If there is still more action to come, send as Hand still in Progress
         return new GameInfoWrapper(game.getPlayers(), null, game.getDealerUpCard(), Round.HAND_IN_PROGRESS,
                 new PlayerAction(player.get().getName(), action), game.getDeckSize());
+    }
+
+    // Used by the Trebek admin panel. Not for public use.
+    public GameInfoWrapper manualHandStart() throws BlackjackException {
+        if (!game.isBettingRoundDone()) throw new BlackjackException(BlackjackErrorCode.BJ914);
+        if (game.getDealer().isAuto()) throw new BlackjackException(BlackjackErrorCode.BJ915);
+
+        game.getPlayers().stream().forEach(Player::removeOldHands);
+        game.getPlayers().stream().filter(Player::isActive).forEach(Player::moveBetToNewHand);
+        game.getDealer().getHands().clear();
+        game.getDealer().addHand(new Hand());
+        return startNewHand();
+    }
+
+    public GameInfoWrapper getCurrentGameInfo() {
+        boolean isInProgress = !game.isActionDone();
+        return new GameInfoWrapper(game.getPlayers(), isInProgress ? null: game.getDealer(), game.getDealerUpCard(),
+                isInProgress ? Round.HAND_IN_PROGRESS : Round.BETTING_ROUND, null, game.getDeckSize());
+    }
+
+    public boolean toggleAutoPilot() {
+        game.getDealer().toggleAuto();
+        return game.getDealer().isAuto();
+    }
+
+    public void togglePlayerActive(String playerId) throws BlackjackException {
+        Optional<Player> player = game.getPlayers().stream().filter(p -> p.getPlayerId().equals(playerId)).findFirst();
+
+        if (player.isPresent()) {
+            // UI will only get redrawn on the next event message.
+            player.get().toggleIsActive();
+        } else {
+            throw new BlackjackException(BlackjackErrorCode.BJ921);
+        }
+    }
+
+    public PlayerHandWrapper getActivePlayerHandNum() throws BlackjackException {
+        for (Player p : game.getPlayers()) {
+            for (int i = 0; i < p.getHands().size(); i++) {
+                if (p.getHands().get(i).isTurn()) {
+                    return new PlayerHandWrapper(p.getPlayerId(), i);
+                }
+            }
+        }
+        throw new BlackjackException(BlackjackErrorCode.BJ940);
     }
 
     private boolean canPerformDouble(Player player, Hand hand) {

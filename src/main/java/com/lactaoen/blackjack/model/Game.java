@@ -10,18 +10,18 @@ public class Game {
     private final int MAX_PLAYERS_PER_GAME = 4;
 
     private Deck deck;
-    private Player dealer;
+    private Dealer dealer;
     private List<Player> players;
 
     public Game() {
         deck = new Deck(2);
-        dealer = new Player("Debby the Dealer", 5);
+        dealer = new Dealer("Debby the Dealer", 5, true);
         players = new ArrayList<>();
     }
 
     public Game(int deckCount) {
         deck = new Deck(deckCount);
-        dealer = new Player("Debby the Dealer", 5);
+        dealer = new Dealer("Debby the Dealer", 5, true);
         players = new ArrayList<>();
     }
 
@@ -36,11 +36,11 @@ public class Game {
         this.deck = deck;
     }
 
-    public Player getDealer() {
+    public Dealer getDealer() {
         return dealer;
     }
 
-    public void setDealer(Player dealer) {
+    public void setDealer(Dealer dealer) {
         this.dealer = dealer;
     }
 
@@ -66,7 +66,11 @@ public class Game {
     }
 
     public Card getDealerUpCard() {
-        return dealer.getHands().get(0).getCards().get(0);
+        try {
+            return dealer.getHands().get(0).getCards().get(0);
+        } catch (IndexOutOfBoundsException ex) {
+            return null;
+        }
     }
 
     public int getDeckSize() {

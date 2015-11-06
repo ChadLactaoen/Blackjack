@@ -14,8 +14,8 @@
     <div class="container">
         <div>
             <div>
-                <button id="connect" onclick="connect();">Connect</button>
-                <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+                <button id="connect" class="btn btn-default" onclick="connect();">Connect</button>
+                <button id="disconnect" class="btn btn-default" disabled="disabled" onclick="disconnect();">Disconnect</button>
             </div>
             <div id="description">
                 <p>You can use the buttons below to manually play a game of Blackjack, or you can connect your client to
@@ -23,14 +23,14 @@
             </div>
             <div id="conversationDiv">
                 <label>What is your name? </label><input type="text" id="name" />
-                <button id="sendName" onclick="sendName();">Send</button>
+                <button id="sendName" class="btn btn-default" onclick="sendName();">Send</button>
                 <p id="response"></p>
             </div>
 
             <!-- Betting center -->
             <div id="bettingCenter">
                 <label>Bet Amount (increments of 10) </label><input type="text" id="bet" />
-                <button id="sendBetAmount" onClick="placeBet();">Place Bet</button>
+                <button id="sendBetAmount" class="btn btn-default" onClick="placeBet();">Place Bet</button>
             </div>
 
             <!-- Dealer hand display will go here -->
@@ -41,12 +41,21 @@
 
             <!-- Action buttons -->
             <div id="actionButtons">
-                <button id="standAction" onclick="handleStand()">Stand</button>
-                <button id="hitAction" onclick="handleHit()">Hit</button>
-                <button id="doubleAction" onclick="handleDouble()">Double</button>
-                <button id="splitAction" onclick="handleSplit()">Split</button>
-                <button id="surrenderAction" onclick="handleSurrender()">Surrender</button>
+                <button id="standAction" class="btn btn-default" onclick="handleStand()">Stand</button>
+                <button id="hitAction" class="btn btn-default" onclick="handleHit()">Hit</button>
+                <button id="doubleAction" class="btn btn-default" onclick="handleDouble()">Double</button>
+                <button id="splitAction" class="btn btn-default" onclick="handleSplit()">Split</button>
+                <button id="surrenderAction" class="btn btn-default" onclick="handleSurrender()">Surrender</button>
             </div>
+        </div>
+        <div class="row">
+            <div id="alerts" class="col-md-12"></div>
+        </div>
+        <div class="row">
+            <div id="hand-status" class="col-md-offset-8 col-md-4 text-center"></div>
+        </div>
+        <div class="row">
+            <div id="deck-card-count" class="col-md-offset-8 col-md-4 text-center"></div>
         </div>
         <div class="row">
             <div class="col-md-12 text-center"><h1>Dealer</h1></div>
@@ -83,7 +92,8 @@
             <div class="col-md-2 hand" hand-num="4" seat-num="1"></div>
         </div>
         <div class="row bet-row">
-            <div class="col-md-offset-4 col-md-2 alternate hand" hand-num="1" seat-num="1"></div>
+            <div class="col-md-offset-1 col-md-3 active-status" seat-num="1"></div>
+            <div class="col-md-2 alternate hand" hand-num="1" seat-num="1"></div>
             <div class="col-md-2 hand" hand-num="2" seat-num="1"></div>
             <div class="col-md-2 alternate hand" hand-num="3" seat-num="1"></div>
             <div class="col-md-2 hand" hand-num="4" seat-num="1"></h3></div>
@@ -112,7 +122,8 @@
             <div class="col-md-2 alternate hand" hand-num="4" seat-num="2"></div>
         </div>
         <div class="row bet-row">
-            <div class="col-md-offset-4 col-md-2 hand" hand-num="1" seat-num="2"></div>
+            <div class="col-md-offset-1 col-md-3 active-status" seat-num="2"></div>
+            <div class="col-md-2 hand" hand-num="1" seat-num="2"></div>
             <div class="col-md-2 alternate hand" hand-num="2" seat-num="2"></div>
             <div class="col-md-2 hand" hand-num="3" seat-num="2"></div>
             <div class="col-md-2 alternate hand" hand-num="4" seat-num="2"></h3></div>
@@ -141,7 +152,8 @@
             <div class="col-md-2 hand" hand-num="4" seat-num="3"></div>
         </div>
         <div class="row bet-row">
-            <div class="col-md-offset-4 col-md-2 alternate hand" hand-num="1" seat-num="3"></div>
+            <div class="col-md-offset-1 col-md-3 active-status" seat-num="3"></div>
+            <div class="col-md-2 alternate hand" hand-num="1" seat-num="3"></div>
             <div class="col-md-2 hand" hand-num="2" seat-num="3"></div>
             <div class="col-md-2 alternate hand" hand-num="3" seat-num="3"></div>
             <div class="col-md-2 hand" hand-num="4" seat-num="3"></h3></div>
@@ -170,7 +182,8 @@
             <div class="col-md-2 alternate hand" hand-num="4" seat-num="4"></div>
         </div>
         <div class="row bet-row">
-            <div class="col-md-offset-4 col-md-2 hand" hand-num="1" seat-num="4"></div>
+            <div class="col-md-offset-1 col-md-3 active-status" seat-num="4"></div>
+            <div class="col-md-2 hand" hand-num="1" seat-num="4"></div>
             <div class="col-md-2 alternate hand" hand-num="2" seat-num="4"></div>
             <div class="col-md-2 hand" hand-num="3" seat-num="4"></div>
             <div class="col-md-2 alternate hand" hand-num="4" seat-num="4"></h3></div>

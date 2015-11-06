@@ -28,21 +28,21 @@ public class BlackjackController {
     }
 
     @MessageMapping("/register")
-    @SendToUser("/topic/player")
+    @SendToUser("/queue/player")
     public PlayerInfo register(RegistrationWrapper reg) throws BlackjackException {
         return new PlayerInfo().transpose(blackjackService.registerPlayer(reg.getName()));
     }
 
     @MessageMapping("/unregister")
-    @SendToUser("/topic/player")
+    @SendToUser("/queue/player")
     public Player unregister(UnregistrationWrapper reg) throws BlackjackException {
         return blackjackService.unregisterPlayer(reg.getPlayerId());
     }
 
     @MessageMapping("/players")
-    @SendTo("/topic/players")
-    public List<Player> getRegisteredPlayers() {
-        return blackjackService.getPlayers();
+    @SendToUser("/queue/players")
+    public GameInfoWrapper getCurrentGameInfo() {
+        return blackjackService.getCurrentGameInfo();
     }
 
     @MessageMapping("/bet")
@@ -54,13 +54,13 @@ public class BlackjackController {
     @MessageMapping("/action")
     @SendTo("/topic/game")
     public GameInfoWrapper submitAction(ActionWrapper action) throws BlackjackException, InterruptedException {
-        // Waits 3/4 second before sending message to simulate waiting for the next action
-        Thread.sleep(750);
+        // Waits 1/2 second before sending message to simulate waiting for the next action
+        Thread.sleep(500);
         return blackjackService.processAction(action.getPlayerId(), action.getHandNum(), action.getAction());
     }
 
     @MessageExceptionHandler
-    @SendToUser("/topic/errors")
+    @SendToUser("/queue/errors")
     public Map<String, Object> handleErrors(BlackjackException ex) {
         Map<String, Object> errorMap = new HashMap<>();
         errorMap.put("errorCode", ex.getErrorCode());

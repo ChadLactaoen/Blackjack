@@ -7,13 +7,13 @@ import java.util.List;
 public class GameInfoWrapper {
 
     private List<Player> players;
-    private Player dealer;
+    private Dealer dealer;
     private Card dealerUpCard;
     private Round gameStatus;
     private PlayerAction lastAction;
     private int cardsLeftInDeck;
 
-    public GameInfoWrapper(List<Player> players, Player dealer, Card dealerUpCard, Round gameStatus, PlayerAction lastAction, int cardsLeftInDeck) {
+    public GameInfoWrapper(List<Player> players, Dealer dealer, Card dealerUpCard, Round gameStatus, PlayerAction lastAction, int cardsLeftInDeck) {
         this.players = players;
         this.dealer = dealer;
         this.dealerUpCard = dealerUpCard;
@@ -30,11 +30,11 @@ public class GameInfoWrapper {
         this.players = players;
     }
 
-    public Player getDealer() {
+    public Dealer getDealer() {
         return dealer;
     }
 
-    public void setDealer(Player dealer) {
+    public void setDealer(Dealer dealer) {
         this.dealer = dealer;
     }
 
