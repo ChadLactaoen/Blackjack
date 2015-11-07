@@ -12,7 +12,6 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -20,12 +19,6 @@ public class BlackjackController {
 
     @Autowired
     private BlackjackService blackjackService;
-
-    @MessageMapping("/connect")
-    @SendTo("/topic/greetings")
-    public String greeting() throws Exception {
-        return "Hello";
-    }
 
     @MessageMapping("/register")
     @SendToUser("/queue/player")
