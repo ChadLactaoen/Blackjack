@@ -45,7 +45,7 @@ WebSockets allow for two-way communication between the server and clients. When 
 
 * `/topic/game` The main destination for all game info. Any messages sent from here is broadcasted to all clients currently connected to the server. Messages sent to this destination will usually be triggered from clients sending their bets and players sending their actions.
 * `/queue/player` Messages sent here are only sent to the client that sent a message to an endpoint on the server whose message destination is here. This will be especially important to listen to when your client first registers to play blackjack. During registration, you'll be assigned a secret playerId which is sent to only you, and you'll need to keep track of this playerId to perform any actions and play any hands.
-* `/queue/errors' If your client sent an invalid message (such as betting when a hand is already in progress or attempting an invald action on a hand), an error code and a error message will be sent to this queue, which is only sent to the offending client. You may want to consider handling various errors in case your client commits an invalid message. Any unhandled errors committed by your client will hold up the game and could result in a disqualification of the hand or even the game. Possible error messages will be discussed in a later section.
+* `/queue/errors` If your client sent an invalid message (such as betting when a hand is already in progress or attempting an invald action on a hand), an error code and a error message will be sent to this queue, which is only sent to the offending client. You may want to consider handling various errors in case your client commits an invalid message. Any unhandled errors committed by your client will hold up the game and could result in a disqualification of the hand or even the game. Possible error messages will be discussed in a later section.
 
 ## API Reference
 
@@ -166,11 +166,11 @@ The `action` is an enum that tells the server what action you want to perform on
 ```
 You'll see there's a lot going on in this return object. Most of these are self-explanatory, but I'll go through some of the most important fields:
 * `players` is an array of all the currently registered players in the order they were seated. Each `player` object has some useful info.
-** `hands` is an array associated to each player with all the hands (up to 4) that he's currently playing. There should only be one hand per player unless they performed a split.
-*** The `result` in each `hand` object is null if the hand is currently in progress. After the hand is over and the hand is evaluated, it'll either be `WIN`, `PUSH`, or `LOSE`
-*** The `handStatus` field in each `hand` object represents the current status of the hand. It is `IN_PLAY` if the hand has not busted, `BUST` if the hand value is over 21, `BLACKJACK` if you were dealt a blackjack, and `SURRENDER` if you decided to surrender for half your bet.
-*** `turn` is a boolean that determines if it's that hand's turn to be acted on.
-** `betInForNextRound` is a boolean that will be set to `false` if a hand is currently in progress. This is used during a betting round to determine if that player has placed a bet for the upcoming hand, in which case, would be set to `true`.
+    * `hands` is an array associated to each player with all the hands (up to 4) that he's currently playing. There should only be one hand per player unless they performed a split.
+        * The `result` in each `hand` object is null if the hand is currently in progress. After the hand is over and the hand is evaluated, it'll either be `WIN`, `PUSH`, or `LOSE`
+        * The `handStatus` field in each `hand` object represents the current status of the hand. It is `IN_PLAY` if the hand has not busted, `BUST` if the hand value is over 21, `BLACKJACK` if you were dealt a blackjack, and `SURRENDER` if you decided to surrender for half your bet.
+        * `turn` is a boolean that determines if it's that hand's turn to be acted on.
+    * `betInForNextRound` is a boolean that will be set to `false` if a hand is currently in progress. This is used during a betting round to determine if that player has placed a bet for the upcoming hand, in which case, would be set to `true`.
 * `dealer` will be null if the hand is in progress as it holds information on what cards are in the dealer's hand. During the hand, you can refer to the `dealerUpCard` field to see what his top card is. After everyone has acted on their hand, the `dealer` object will be present with information about the dealer and his hand, and the game status will then change to `BETTING_ROUND`
 * `gameStatus` This will either be `HAND_IN_PROGRESS` or `BETTING_ROUND`. During the betting round, you can place bets. During a hand, only actions on the current hand to act will be accepted.
 
@@ -179,21 +179,21 @@ You'll see there's a lot going on in this return object. Most of these are self-
 There may be instances where a client will send an invalid message to the server, and the server will respond with an error message to the offending client with what caused the error to be sent. The entire list of errors is encompassed in the `BlackjackErrorCode.java` file. For convenience, here's a list of what each error code means and why you may have gotten the error.
 
 * BJ1xx - Error codes in the 100's represent betting errors
-** `BJ101` - The bet amount being sent is more than what the player can afford
-** `BJ102` - You've already made a bet for the current hand
-** `BJ105` - You can't place a bet at this time because there is already a hand in progress
-** `BJ110` - Bet must be in increments of 10
+    * `BJ101` - The bet amount being sent is more than what the player can afford
+    * `BJ102` - You've already made a bet for the current hand
+    * `BJ105` - You can't place a bet at this time because there is already a hand in progress
+    * `BJ110` - Bet must be in increments of 10
 * BJ5xx - Error codes in the 500's represent player errors
-** `BJ500` - The game is at max capacity and cannot register another player
-** `BJ550` - Unable to process an action due to an invalid player id
-** `BJ570` - Unable to place a bet because the player's status is currently Inactive. It is only sent to Inactive by the admin, and can only be switched back to Active by an admin
+    * `BJ500` - The game is at max capacity and cannot register another player
+    * `BJ550` - Unable to process an action due to an invalid player id
+    * `BJ570` - Unable to place a bet because the player's status is currently Inactive. It is only sent to Inactive by the admin, and can only be switched back to Active by an admin
 * BJ7xx - Error codes in the 700's represent in-game action errors
-** `BJ700` - You send an action for a hand, but it is the betting round
-** `BJ701` - The hand number you want to act on does not exist for the given player
-** `BJ720` - You attempted to double down on a hand that was not eligible for a double down
-** `BJ730` - You attempted to surrender a hand that was not eligible for a surrender
-** `BJ740` - You attempted to split a hand that was not eligible for a split
-** `BJ799` - You are attempting to act on a hand when it is not your turn to act
+    * `BJ700` - You send an action for a hand, but it is the betting round
+    * `BJ701` - The hand number you want to act on does not exist for the given player
+    * `BJ720` - You attempted to double down on a hand that was not eligible for a double down
+    * `BJ730` - You attempted to surrender a hand that was not eligible for a surrender
+    * `BJ740` - You attempted to split a hand that was not eligible for a split
+    * `BJ799` - You are attempting to act on a hand when it is not your turn to act
 * BJ9xx - Error codes in the 900's are reserved for the Trebek admin panel and should never be sent to clients. If you see an error in the 900's, you're probably accessing endpoints you shouldn't be hitting
 
 ## What is Trebek?
