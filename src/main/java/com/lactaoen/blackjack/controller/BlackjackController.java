@@ -54,10 +54,7 @@ public class BlackjackController {
 
     @MessageExceptionHandler
     @SendToUser("/queue/errors")
-    public Map<String, Object> handleErrors(BlackjackException ex) {
-        Map<String, Object> errorMap = new HashMap<>();
-        errorMap.put("errorCode", ex.getErrorCode());
-        errorMap.put("message", ex.getErrorCode().getMessage());
-        return errorMap;
+    public BlackjackErrorWrapper handleErrors(BlackjackException ex) {
+        return new BlackjackErrorWrapper(ex.getErrorCode(), ex.getMessage());
     }
 }

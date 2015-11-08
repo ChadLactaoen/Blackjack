@@ -10,8 +10,7 @@ The goal of the challenge is to create a working client that can run through sev
 
 ## Blackjack Resources and Strategy
 
-If you are unfamiliar with blackjack, try starting [here](http://wizardofodds.com/games/blackjack/basics/#toc-Rules)
-Hint: Even if you do know all the rules, the website is VERY useful for all kinds of strategy and tips. In fact, it would be beneficial to take advantage of everything the website has to offer.
+If you are unfamiliar with blackjack, try starting [here](http://wizardofodds.com/games/blackjack/basics/#toc-Rules). Hint: Even if you do know all the rules, the website is VERY useful for all kinds of strategy and tips. In fact, it would be beneficial to take advantage of everything the website has to offer.
 
 ## Requirements to Run Locally
 * Java 8 or greater
@@ -45,7 +44,7 @@ WebSockets allow for two-way communication between the server and clients. When 
 
 * `/topic/game` The main destination for all game info. Any messages sent from here is broadcasted to all clients currently connected to the server. Messages sent to this destination will usually be triggered from clients sending their bets and players sending their actions.
 * `/queue/player` Messages sent here are only sent to the client that sent a message to an endpoint on the server whose message destination is here. This will be especially important to listen to when your client first registers to play blackjack. During registration, you'll be assigned a secret playerId which is sent to only you, and you'll need to keep track of this playerId to perform any actions and play any hands.
-* `/queue/errors` If your client sent an invalid message (such as betting when a hand is already in progress or attempting an invald action on a hand), an error code and a error message will be sent to this queue, which is only sent to the offending client. You may want to consider handling various errors in case your client commits an invalid message. Any unhandled errors committed by your client will hold up the game and could result in a disqualification of the hand or even the game. Possible error messages will be discussed in a later section.
+* `/queue/errors` If your client sent an invalid message (such as betting when a hand is already in progress or attempting an invalid action on a hand), an error code and an error message will be sent to this queue, which is only sent to the offending client. You may want to consider handling various errors in case your client commits an invalid message. Any unhandled errors committed by your client will hold up the game and could result in a disqualification of the hand or even the game. Possible error messages will be discussed in a later section.
 
 ## API Reference
 
