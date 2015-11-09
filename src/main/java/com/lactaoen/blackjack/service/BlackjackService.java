@@ -112,7 +112,7 @@ public class BlackjackService {
      * @return The Player object who will be unregistered.
      * @throws BlackjackException Thrown if the player id is not found.
      */
-    public Player unregisterPlayer(String playerId) throws BlackjackException {
+    public PlayerInfo unregisterPlayer(String playerId) throws BlackjackException {
         if (!game.isActionDone()) {
             // If the player tries to unregister during a hand, allow them to do it, but set the player to inactive
             // We can kick them out later
@@ -138,7 +138,7 @@ public class BlackjackService {
         if (player == null) {
             throw new BlackjackException(BlackjackErrorCode.BJ920);
         }
-        return player;
+        return new PlayerInfo().transpose(player);
     }
 
     /**

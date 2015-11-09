@@ -28,7 +28,7 @@ public class BlackjackController {
 
     @MessageMapping("/unregister")
     @SendToUser("/queue/player")
-    public Player unregister(UnregistrationWrapper reg) throws BlackjackException {
+    public PlayerInfo unregister(UnregistrationWrapper reg) throws BlackjackException {
         return blackjackService.unregisterPlayer(reg.getPlayerId());
     }
 
