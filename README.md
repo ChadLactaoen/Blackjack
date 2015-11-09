@@ -4,7 +4,7 @@ This is a simple blackjack server over WebSockets that leverages the Simple Text
 
 ## Purpose
 
-The server was written as an entrance exercise for potential intern candidates and test their critical thinking, coding skill, ability to parse messages and leverage APIs, and competiveness by putting their clients up against other interns' clients. But most importantly, it's written with the idea to have fun! 
+The server was written as an entrance exercise for potential intern candidates and test their critical thinking, coding skill, ability to parse messages and leverage APIs, and competitiveness by putting their clients up against other interns' clients. But most importantly, it's written with the idea to have fun!
 
 The goal of the challenge is to create a working client that can run through several hands against the dealer without any hiccups. Once you have a basic client working, if time allows, try to add strategy to your player to improve its performance and beat other clients.
 
@@ -197,15 +197,15 @@ There may be instances where a client will send an invalid message to the server
 
 ## What is Trebek?
 
-While perusing the source code for the Blackjack server, you may notice references to Trebek and might be wondering what it is in the first place. Trebek is the admin panel for the blackjack server that has access to override hands and kick players out of the game. The endpoints and logic is intentionally left out of Git since it should only be used by those administering the exercise. Any illegal use of Trebek could result in disqualification. If you are administrating the Blackjack server and need the source code for the Trebek panel, please contact Chad Tomas.
+While perusing the source code for the Blackjack server, you may notice references to Trebek and might be wondering what it is in the first place. Trebek is the admin panel for the blackjack server that has access to override hands and kick players out of the game. The endpoints and logic is intentionally left out of Git since it should only be used by those administering the exercise (although if you're resourceful enough, you could find these endpoints and use them, but please don't). Any illegal use of Trebek could result in disqualification. If you are administrating the Blackjack server and need the source code for the Trebek panel, please contact Chad Tomas.
 
 ## Final Thoughts
 
 Depending on time at the end of the exercise, the idea would be to have four clients at a time going up against each other for a certain number of hands or a certain amount of time. At the end of the given time, the two highest earning clients in that session advance to the next round. The process will repeat until we have 4 clients left, and the highest earner in that final session wins. Note: Winning does not guarantee an internship, but it could be taken into consideration, so try your best.
 
-As far as blackjack strategy goes, take advantage of the internet and any other sources you can get your hands on in the allotted time. As a hint, you should consider looking into implementing basic strategy once your client can play the game. Then if there's time, you might even look into card counting and betting strategies. If you're reading this and wiriting a client, chances are you're a potential intern candidate. Meaning you're probably in Vegas. There will be people in the room who live and breathe blackjack including myself, so feel free to ask questions on strategy or programming.
+As far as blackjack strategy goes, take advantage of the internet and any other sources you can get your hands on in the allotted time. As a hint, you should consider looking into implementing basic strategy once your client can play the game. Then if there's time, you might even look into card counting and betting strategies. If you're reading this and writing a client, chances are you're a potential intern candidate. Meaning you're probably in Vegas. There will be people in the room who live and breathe blackjack including myself, so feel free to ask questions on strategy or programming.
 
-With all that being said, the server is not fool-proof. It was written by one engineer in the span of a week. Meaning, things haven't been fully tested and may have sparse documentation due to time contraints. So, if you look hard enough, you may find some loop holes in the source code that might give you an advantage in one way or another. Use whatever you can to gain an advantage, but also consider the ethics of the situation before doing anything that could critically make the game less fun for everyone else.
+With all that being said, the server is not fool-proof. It was written by one engineer in the span of a week. Meaning, things haven't been fully tested and may have sparse documentation due to time constraints. So, if you look hard enough, you may find some loop holes in the source code that might give you an advantage in one way or another. Use whatever you can to gain an advantage, but also consider the ethics of the situation before doing anything that could critically make the game less fun for everyone else.
 
 If you have any questions regarding the project, feel free to contact me. And lastly...
 
