@@ -13,6 +13,9 @@ public class GameInfoWrapper {
     private PlayerAction lastAction;
     private int cardsLeftInDeck;
 
+    public GameInfoWrapper() {
+    }
+
     public GameInfoWrapper(List<Player> players, Dealer dealer, Card dealerUpCard, Round gameStatus, PlayerAction lastAction, int cardsLeftInDeck) {
         this.players = players;
         this.dealer = dealer;

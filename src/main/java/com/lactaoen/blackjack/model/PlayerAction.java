@@ -5,6 +5,9 @@ public class PlayerAction {
     private String playerName;
     private Action action;
 
+    public PlayerAction() {
+    }
+
     public PlayerAction(String playerName, Action action) {
         this.playerName = playerName;
         this.action = action;

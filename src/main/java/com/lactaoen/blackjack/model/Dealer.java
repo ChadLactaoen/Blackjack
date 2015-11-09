@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Dealer extends Player {
 
+    public Dealer() {
+    }
+
     public Dealer(String name, int seatNum, boolean isAuto) {
         super(name, seatNum);
         this.isAuto = isAuto;
