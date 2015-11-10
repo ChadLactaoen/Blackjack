@@ -4,11 +4,6 @@ var playerId = null;
 function setConnected(connected) {
     document.getElementById('connect').disabled = connected;
     document.getElementById('disconnect').disabled = !connected;
-    document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
-    document.getElementById('bettingCenter').style.visibility = connected ? 'visible' : 'hidden';
-    document.getElementById('actionButtons').style.visibility = connected ? 'visible' : 'hidden';
-    document.getElementById('description').style.visibility = connected ? 'visible' : 'hidden';
-    document.getElementById('response').innerHTML = '';
 }
 
 function connect() {
