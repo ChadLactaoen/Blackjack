@@ -98,7 +98,7 @@ public class BlackjackService {
      * @throws BlackjackException Thrown if there is no more room for another player in the Game.
      */
     public Player registerPlayer(String name) throws BlackjackException {
-        if (game.getPlayers().size() < 4) {
+        if (game.getPlayers().size() < 6) {
             return game.addPlayer(name);
         }
 

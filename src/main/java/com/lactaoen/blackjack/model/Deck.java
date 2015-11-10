@@ -58,7 +58,7 @@ public class Deck {
     }
 
     public boolean isPastCutCard() {
-        return cards.size() < 30;
+        return cards.size() < 40;
     }
 
     public int getDeckSize() {

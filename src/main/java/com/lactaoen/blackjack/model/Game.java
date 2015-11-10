@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 /** Technically not a model since it holds state information **/
 public class Game {
 
-    private final int MAX_PLAYERS_PER_GAME = 4;
+    private final int MAX_PLAYERS_PER_GAME = 6;
 
     private Deck deck;
     private Dealer dealer;
