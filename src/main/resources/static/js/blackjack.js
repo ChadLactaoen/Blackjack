@@ -62,12 +62,6 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sendName() {
-    var name = document.getElementById('name').value;
-    $('#conversationDiv').hide();
-    stompClient.send("/app/register", {}, JSON.stringify({ 'name': name }));
-}
-
 function populateUI(gameObj) {
     gameObj = JSON.parse(gameObj);
     var handStatus = gameObj.gameStatus == 'BETTING_ROUND' ? 'Betting Round' : 'Hand in Progress';
@@ -79,16 +73,6 @@ function populateUI(gameObj) {
 
     $('#hand-status').html('<h4 class="text-right ' + extraClass + '">' + handStatus + '</h4>');
     $('#deck-card-count').html('<p class="text-right">Cards Left in Deck: ' + gameObj.cardsLeftInDeck + '</p>');
-}
-
-function placeBet() {
-    var betAmount = document.getElementById('bet').value;
-
-    var obj = {};
-    obj["playerId"] = playerId;
-    obj["betAmount"] = parseInt(betAmount);
-
-    stompClient.send("/app/bet", {}, JSON.stringify({ 'playerId': playerId, 'betAmount': parseInt(betAmount)}));
 }
 
 function getSuitSymbol(suit) {
@@ -209,24 +193,4 @@ function createActionObject(action) {
     obj["action"] = action;
     obj["handNum"] = parseInt($('.active').attr('hand-num')) - 1;
     return obj;
-}
-
-function handleHit() {
-    stompClient.send("/app/action", {}, JSON.stringify(createActionObject("HIT")));
-}
-
-function handleStand() {
-    stompClient.send("/app/action", {}, JSON.stringify(createActionObject("STAND")));
-}
-
-function handleDouble() {
-    stompClient.send("/app/action", {}, JSON.stringify(createActionObject("DOUBLE")));
-}
-
-function handleSplit() {
-    stompClient.send("/app/action", {}, JSON.stringify(createActionObject("SPLIT")));
-}
-
-function handleSurrender() {
-    stompClient.send("/app/action", {}, JSON.stringify(createActionObject("SURRENDER")));
 }

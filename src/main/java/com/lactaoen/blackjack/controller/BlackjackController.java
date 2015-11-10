@@ -40,7 +40,7 @@ public class BlackjackController {
 
     @MessageMapping("/bet")
     @SendTo("/topic/game")
-    public GameInfoWrapper placeBet(BetWrapper bet) throws BlackjackException {
+    public GameInfoWrapper placeBet(BetWrapper bet) throws BlackjackException, InterruptedException {
         return blackjackService.placeBet(bet.getPlayerId(), bet.getBetAmount());
     }
 

@@ -47,7 +47,7 @@ public class BlackjackService {
      * @return The status of the Game.
      * @throws BlackjackException Thrown if the bet can't be placed for any reason.
      */
-    public GameInfoWrapper placeBet(String playerId, int betAmount) throws BlackjackException {
+    public GameInfoWrapper placeBet(String playerId, int betAmount) throws BlackjackException, InterruptedException {
         // Player can't place a bet if the action on the current hand is not finished
         if (!game.isActionDone()) throw new BlackjackException(BlackjackErrorCode.BJ105);
 
@@ -80,6 +80,8 @@ public class BlackjackService {
 
         // If all players have placed their bet for this hand and we're on auto-pilot, then deal out the cards
         if (game.isBettingRoundDone() && game.getDealer().isAuto()) {
+            // Sleep so that we can see the result from the last hand
+            Thread.sleep(1500);
             game.getPlayers().stream().forEach(Player::removeOldHands);
             game.getPlayers().stream().filter(Player::isActive).forEach(Player::moveBetToNewHand);
             game.getDealer().getHands().clear();

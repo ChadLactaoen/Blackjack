@@ -17,36 +17,6 @@
                 <button id="connect" class="btn btn-default" onclick="connect();">Connect</button>
                 <button id="disconnect" class="btn btn-default" disabled="disabled" onclick="disconnect();">Disconnect</button>
             </div>
-            <div id="description">
-                <p>You can use the buttons below to manually play a game of Blackjack, or you can connect your client to
-                the server and watch it play out in the UI below.</p>
-            </div>
-            <div id="conversationDiv">
-                <label>What is your name? </label><input type="text" id="name" />
-                <button id="sendName" class="btn btn-default" onclick="sendName();">Send</button>
-                <p id="response"></p>
-            </div>
-
-            <!-- Betting center -->
-            <div id="bettingCenter">
-                <label>Bet Amount (increments of 10) </label><input type="text" id="bet" />
-                <button id="sendBetAmount" class="btn btn-default" onClick="placeBet();">Place Bet</button>
-            </div>
-
-            <!-- Dealer hand display will go here -->
-            <div id="dealerHand"></div>
-
-            <!-- Player hands display will go here -->
-            <div id="playerHands"></div>
-
-            <!-- Action buttons -->
-            <div id="actionButtons">
-                <button id="standAction" class="btn btn-default" onclick="handleStand()">Stand</button>
-                <button id="hitAction" class="btn btn-default" onclick="handleHit()">Hit</button>
-                <button id="doubleAction" class="btn btn-default" onclick="handleDouble()">Double</button>
-                <button id="splitAction" class="btn btn-default" onclick="handleSplit()">Split</button>
-                <button id="surrenderAction" class="btn btn-default" onclick="handleSurrender()">Surrender</button>
-            </div>
         </div>
         <div class="row">
             <div id="alerts" class="col-md-12"></div>
