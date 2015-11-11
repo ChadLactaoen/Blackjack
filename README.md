@@ -12,8 +12,13 @@ The goal of the challenge is to create a working client that can run through sev
 
 If you are unfamiliar with blackjack, try starting [here](http://wizardofodds.com/games/blackjack/basics/#toc-Rules). Hint: Even if you do know all the rules, the website is VERY useful for all kinds of strategy and tips. In fact, it would be beneficial to take advantage of everything the website has to offer.
 
-## Requirements to Run Locally
+## Requirements 
+* Git
+	* You could of course just download this source code directly if you don't want have time to download git.
+	* If you don't have git installed, you can download it [here](https://git-scm.com/download/)
 * Java 8 or greater
+	* You can test this by running `java --version` in your terminal to tell what java version, if any, is installed on your computer
+	* NOTE: Java 8 is only required if you would like to run the server locally for testing purposes. If not, don't fret! There will be test servers you can use to test if you don't have Java 8 installed.
 
 ## Quick'n'Dirty Server Startup
 If you plan on running this locally, be sure you meet all the requirements above so that it will run properly.
