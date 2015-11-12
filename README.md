@@ -20,6 +20,12 @@ If you are unfamiliar with blackjack, try starting [here](http://wizardofodds.co
 	* You can test this by running `java --version` in your terminal to tell what java version, if any, is installed on your computer
 	* NOTE: Java 8 is only required if you would like to run the server locally for testing purposes. If not, don't fret! There will be test servers you can use to test if you don't have Java 8 installed.
 
+## Blackjack Client Code
+You won't be changing any code on the server. Instead, you will have a client that you'll need to implement logic for in order to interact with the server. Luckily for you, the websocket configuration part is already done, all you need to do is write the logic to register into the game, make bets, and act on your hand. There are two versions of the client that you can find here:
+
+  * Java: [https://github.com/chadtomas/BlackjackClient](https://github.com/chadtomas/BlackjackClient)
+  * Python: [https://github.com/chadtomas/PythonBlackjackClient](https://github.com/chadtomas/PythonBlackjackClient)
+
 ## Quick'n'Dirty Server Startup
 If you plan on running this locally, be sure you meet all the requirements above so that it will run properly.
 * Locate the .jar file located in the `target/` folder.
