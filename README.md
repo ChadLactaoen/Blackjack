@@ -10,6 +10,8 @@ The goal of the challenge is to create a working client that can run through sev
 
 ## Blackjack Resources and Strategy
 
+NOTE: The below link may not work. You can refer to that page [here](https://docs.google.com/document/d/1pPEeLRDnpuYQH7r22RZn7h4Qkxr7_YzSbjSUzMNt42k/edit)
+
 If you are unfamiliar with blackjack, try starting [here](http://wizardofodds.com/games/blackjack/basics/#toc-Rules). Hint: Even if you do know all the rules, the website is VERY useful for all kinds of strategy and tips. In fact, it would be beneficial to take advantage of everything the website has to offer.
 
 ## Requirements 
